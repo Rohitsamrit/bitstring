@@ -3,6 +3,9 @@
 @tailwind utilities;
 
 @import url("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf_viewer.min.css");
+@import "react-datepicker/dist/react-datepicker.css";
+@import "react-date-range/dist/styles.css";
+@import "react-date-range/dist/theme/default.css";
 
 .pdf-viewer {
   border: 1px solid #ccc;
@@ -10,6 +13,32 @@
   overflow: hidden;
   height: 500px;
   position: relative;
+}
+.react-datepicker__year-dropdown {
+  max-height: 200px; /* Limit height for better usability */
+  overflow-y: auto; /* Enable scrolling */
+}
+
+.react-datepicker__year-option:hover {
+  background-color: #e5e7eb; /* Change hover background */
+  color: #4f46e5; /* Change hover text color */
+}
+.react-datepicker__navigation--next,
+.react-datepicker__navigation--previous {
+  top: 10px;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: none;
+  color: #4f46e5; /* Customize color */
+}
+
+.react-datepicker__navigation--next {
+  right: 10px;
+}
+
+.react-datepicker__navigation--previous {
+  left: 10px;
 }
 
 /* .pdf-viewer {

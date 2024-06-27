@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { BlobProvider } from "@react-pdf/renderer";
 import ResumeDocument from "./ResumeDocument";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { format } from "date-fns";
+// import { CalendarIcon } from "@heroicons/react/solid";
+import { CalendarDaysIcon } from "@heroicons/react/24/solid";
 
 const resumesData = [
   {
@@ -28,7 +33,8 @@ const resumesData = [
     projects: [{ name: "Project X", description: "Description of project X." }],
     skills: ["JavaScript", "React", "Node.js"],
     certifications: ["Certified Java Developer"],
-    profilePic: "https://randomuser.me/api/portraits/men/1.jpg",
+    profilePic: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    createdAt: "2023-06-15T10:30:00Z",
   },
   {
     id: 2,
@@ -55,7 +61,8 @@ const resumesData = [
     projects: [{ name: "Project Y", description: "Description of project Y." }],
     skills: ["Python", "R", "Machine Learning"],
     certifications: ["Certified Data Scientist"],
-    profilePic: "https://randomuser.me/api/portraits/women/1.jpg",
+    profilePic: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    createdAt: "2023-06-16T10:30:00Z",
   },
   {
     id: 3,
@@ -82,7 +89,8 @@ const resumesData = [
     projects: [{ name: "Project Z", description: "Description of project Z." }],
     skills: ["Sketch", "Figma", "Adobe XD"],
     certifications: ["Certified UX Designer"],
-    profilePic: "https://randomuser.me/api/portraits/women/2.jpg",
+    profilePic: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    createdAt: "2023-06-17T10:30:00Z",
   },
   {
     id: 4,
@@ -109,7 +117,8 @@ const resumesData = [
     projects: [{ name: "Project A", description: "Description of project A." }],
     skills: ["AWS", "Docker", "Kubernetes"],
     certifications: ["Certified DevOps Professional"],
-    profilePic: "https://randomuser.me/api/portraits/men/2.jpg",
+    profilePic: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    createdAt: "2023-06-18T10:30:00Z",
   },
   {
     id: 5,
@@ -136,7 +145,8 @@ const resumesData = [
     projects: [{ name: "Project B", description: "Description of project B." }],
     skills: ["SEO", "Google Analytics", "Content Marketing"],
     certifications: ["Certified Marketing Specialist"],
-    profilePic: "https://randomuser.me/api/portraits/men/3.jpg",
+    profilePic: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    createdAt: "2023-06-19T10:30:00Z",
   },
   {
     id: 6,
@@ -163,7 +173,8 @@ const resumesData = [
     projects: [{ name: "Project C", description: "Description of project C." }],
     skills: ["Agile", "Scrum", "Project Management"],
     certifications: ["Certified Product Manager"],
-    profilePic: "https://randomuser.me/api/portraits/men/4.jpg",
+    profilePic: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    createdAt: "2023-06-20T10:30:00Z",
   },
   {
     id: 7,
@@ -190,7 +201,8 @@ const resumesData = [
     projects: [{ name: "Project D", description: "Description of project D." }],
     skills: ["HTML", "CSS", "React"],
     certifications: ["Certified Frontend Developer"],
-    profilePic: "https://randomuser.me/api/portraits/women/3.jpg",
+    profilePic: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    createdAt: "2023-06-21T10:30:00Z",
   },
   {
     id: 8,
@@ -217,7 +229,8 @@ const resumesData = [
     projects: [{ name: "Project E", description: "Description of project E." }],
     skills: ["Cisco", "Firewall", "Network Security"],
     certifications: ["Certified Network Engineer"],
-    profilePic: "https://randomuser.me/api/portraits/men/5.jpg",
+    profilePic: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    createdAt: "2023-06-22T10:30:00Z",
   },
   {
     id: 9,
@@ -244,7 +257,8 @@ const resumesData = [
     projects: [{ name: "Project F", description: "Description of project F." }],
     skills: ["Excel", "SQL", "Tableau"],
     certifications: ["Certified Data Analyst"],
-    profilePic: "https://randomuser.me/api/portraits/women/4.jpg",
+    profilePic: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    createdAt: "2023-06-23T10:30:00Z",
   },
   {
     id: 10,
@@ -271,7 +285,8 @@ const resumesData = [
     projects: [{ name: "Project G", description: "Description of project G." }],
     skills: ["Selenium", "JUnit", "LoadRunner"],
     certifications: ["Certified QA Engineer"],
-    profilePic: "https://randomuser.me/api/portraits/men/6.jpg",
+    profilePic: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    createdAt: "2023-06-24T10:30:00Z",
   },
   {
     id: 11,
@@ -298,7 +313,8 @@ const resumesData = [
     projects: [{ name: "Project H", description: "Description of project H." }],
     skills: ["Penetration Testing", "SIEM", "Cryptography"],
     certifications: ["Certified Cybersecurity Professional"],
-    profilePic: "https://randomuser.me/api/portraits/women/5.jpg",
+    profilePic: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    createdAt: "2023-06-25T10:30:00Z",
   },
   {
     id: 12,
@@ -325,7 +341,8 @@ const resumesData = [
     projects: [{ name: "Project I", description: "Description of project I." }],
     skills: ["Solidity", "Ethereum", "Smart Contracts"],
     certifications: ["Certified Blockchain Developer"],
-    profilePic: "https://randomuser.me/api/portraits/men/7.jpg",
+    profilePic: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    createdAt: "2023-06-26T10:30:00Z",
   },
   {
     id: 13,
@@ -352,7 +369,8 @@ const resumesData = [
     projects: [{ name: "Project J", description: "Description of project J." }],
     skills: ["TensorFlow", "Python", "Keras"],
     certifications: ["Certified Machine Learning Engineer"],
-    profilePic: "https://randomuser.me/api/portraits/women/6.jpg",
+    profilePic: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    createdAt: "2023-06-27T10:30:00Z",
   },
   {
     id: 14,
@@ -379,7 +397,8 @@ const resumesData = [
     projects: [{ name: "Project K", description: "Description of project K." }],
     skills: ["AWS", "Azure", "GCP"],
     certifications: ["Certified Cloud Architect"],
-    profilePic: "https://randomuser.me/api/portraits/men/8.jpg",
+    profilePic: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    createdAt: "2023-06-28T10:30:00Z",
   },
   {
     id: 15,
@@ -406,7 +425,8 @@ const resumesData = [
     projects: [{ name: "Project L", description: "Description of project L." }],
     skills: ["Python", "Deep Learning", "NLP"],
     certifications: ["Certified AI Researcher"],
-    profilePic: "https://randomuser.me/api/portraits/women/7.jpg",
+    profilePic: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    createdAt: "2023-06-29T10:30:00Z",
   },
   {
     id: 16,
@@ -433,7 +453,8 @@ const resumesData = [
     projects: [{ name: "Project M", description: "Description of project M." }],
     skills: ["Java", "Spring", "Hibernate"],
     certifications: ["Certified Backend Developer"],
-    profilePic: "https://randomuser.me/api/portraits/women/8.jpg",
+    profilePic: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    createdAt: "2023-06-30T10:30:00Z",
   },
   {
     id: 17,
@@ -460,7 +481,8 @@ const resumesData = [
     projects: [{ name: "Project N", description: "Description of project N." }],
     skills: ["JavaScript", "Node.js", "React"],
     certifications: ["Certified Full Stack Developer"],
-    profilePic: "https://randomuser.me/api/portraits/men/9.jpg",
+    profilePic: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    createdAt: "2023-07-01T10:30:00Z",
   },
   {
     id: 18,
@@ -487,7 +509,8 @@ const resumesData = [
     projects: [{ name: "Project O", description: "Description of project O." }],
     skills: ["Technical Writing", "Editing", "Documentation"],
     certifications: ["Certified Technical Writer"],
-    profilePic: "https://randomuser.me/api/portraits/women/9.jpg",
+    profilePic: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    createdAt: "2023-07-02T10:30:00Z",
   },
   {
     id: 19,
@@ -514,7 +537,8 @@ const resumesData = [
     projects: [{ name: "Project P", description: "Description of project P." }],
     skills: ["System Analysis", "SQL", "Business Analysis"],
     certifications: ["Certified Systems Analyst"],
-    profilePic: "https://randomuser.me/api/portraits/men/10.jpg",
+    profilePic: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    createdAt: "2023-07-03T10:30:00Z",
   },
   {
     id: 20,
@@ -523,7 +547,6 @@ const resumesData = [
     jobRole: "Content Manager",
     dob: "1992-02-22",
     contact: { email: "rachel.stevens@example.com", phone: "567-890-1234" },
-
     education: [
       {
         degree: "M.A. in Communications",
@@ -542,7 +565,8 @@ const resumesData = [
     projects: [{ name: "Project Q", description: "Description of project Q." }],
     skills: ["Content Management", "SEO", "Social Media"],
     certifications: ["Certified Content Manager"],
-    profilePic: "https://randomuser.me/api/portraits/women/10.jpg",
+    profilePic: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    createdAt: "2023-07-04T10:30:00Z",
   },
 ];
 
@@ -573,6 +597,7 @@ const resumesData = [
 //     skills: ["JavaScript", "React", "Node.js"],
 //     certifications: ["Certified Java Developer"],
 //     profilePic: "https://randomuser.me/api/portraits/men/1.jpg",
+//     createdAt: "2023-06-15T10:30:00Z",
 //   },
 // ];
 
@@ -584,8 +609,16 @@ function ViewResumes() {
   const [sortBy, setSortBy] = useState("");
   const [contextMenu, setContextMenu] = useState(null);
   const [statusFilter, setStatusFilter] = useState("All");
+  // const [startDate, setStartDate] = useState("");
+  // const [endDate, setEndDate] = useState("");
+  const [dateRange, setDateRange] = useState([null, null]);
+  const [startDate, endDate] = dateRange;
   const handleStatusFilterChange = (status) => {
     setStatusFilter(status);
+  };
+  const handleDateRangeChange = (dates) => {
+    const [start, end] = dates;
+    setDateRange([start, end]);
   };
 
   useEffect(() => {
@@ -618,6 +651,20 @@ function ViewResumes() {
         (resume) => resume.status === statusFilter
       );
     }
+    // Filter by date range
+    if (startDate || endDate) {
+      filteredResumes = filteredResumes.filter((resume) => {
+        const createdAt = new Date(resume.createdAt);
+        if (startDate && endDate) {
+          return createdAt >= startDate && createdAt <= endDate;
+        } else if (startDate) {
+          return createdAt >= startDate;
+        } else if (endDate) {
+          return createdAt <= endDate;
+        }
+        return true;
+      });
+    }
 
     // Sort resumes
     if (sortBy === "experienceAsc") {
@@ -638,6 +685,8 @@ function ViewResumes() {
     setJobRoleFilter("");
     setSortBy("");
     setStatusFilter("All");
+    setStatusFilter("All");
+    setDateRange([null, null]);
     setResumes(resumesData);
   };
 
@@ -668,6 +717,9 @@ function ViewResumes() {
       setContextMenu(null);
     }
   };
+  // const handleDateRangeChange = (update) => {
+  //   setDateRange(update);
+  // };
 
   // Get unique job roles for the dropdown
   const uniqueJobRoles = [
@@ -696,6 +748,7 @@ function ViewResumes() {
           <option value="6-8">6-8 Years</option>
           <option value="9-">9+ Years</option>
         </select>
+
         <select
           className="bg-white border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           value={statusFilter}
@@ -730,6 +783,29 @@ function ViewResumes() {
           <option value="nameAsc">Name (A-Z)</option>
           <option value="nameDesc">Name (Z-A)</option>
         </select>
+        <div className="relative">
+          <DatePicker
+            selected={startDate}
+            onChange={handleDateRangeChange}
+            startDate={startDate}
+            endDate={endDate}
+            selectsRange
+            placeholderText="Select date range"
+            showMonthDropdown
+            showYearDropdown
+            yearDropdownItemNumber={101} // Number of years shown in dropdown
+            scrollableYearDropdown // Enables scrolling in year dropdown
+            minDate={new Date(1950, 0, 1)} // Minimum selectable date
+            maxDate={new Date(2050, 11, 31)} // Maximum selectable date
+            dateFormat="MMMM d, yyyy"
+            className="w-full px-4 py-2 pl-10 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          />
+          <CalendarDaysIcon
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
+            width={20}
+            height={20}
+          />
+        </div>
 
         <button
           className="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 transition duration-300"
@@ -771,17 +847,24 @@ function ViewResumes() {
               </p>
               {resume.status !== "Undecided" && (
                 <p
-                  className={`text-center font-bold mt-2 ${
-                    resume.status === "Accept"
-                      ? "text-green-600"
-                      : resume.status === "Pending"
-                      ? "text-yellow-600"
-                      : ""
-                  }`}
+                  className={`text-center font-bold mt-4 px-3 py-1 rounded-full
+    ${
+      resume.status === "Accept"
+        ? "bg-green-100 text-green-800"
+        : resume.status === "Pending"
+        ? "bg-yellow-100 text-yellow-800"
+        : resume.status === "Reject"
+        ? "bg-red-100 text-red-800"
+        : "bg-white-100 text-gray-800"
+    }`}
                 >
                   {resume.status}
                 </p>
               )}
+
+              <p className="text-center text-gray-500 mt-4 text-sm">
+                Created: {format(new Date(resume.createdAt), "MMM d, yyyy")}
+              </p>
             </div>
           </div>
         ))}
@@ -790,25 +873,67 @@ function ViewResumes() {
       {/* Context Menu */}
       {contextMenu && (
         <div
-          className="fixed bg-white shadow-md rounded-md py-2 z-50"
+          className="fixed bg-white shadow-lg rounded-lg overflow-hidden z-50 w-48 "
           style={{ top: contextMenu.y, left: contextMenu.x }}
         >
           <button
-            className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-150 ease-in-out"
             onClick={() => handleContextMenuAction("Accept")}
           >
+            <svg
+              className="w-5 h-5 mr-3 text-green-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
             Accept
           </button>
           <button
-            className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-150 ease-in-out"
             onClick={() => handleContextMenuAction("Reject")}
           >
+            <svg
+              className="w-5 h-5 mr-3 text-red-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
             Reject
           </button>
           <button
-            className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-150 ease-in-out"
             onClick={() => handleContextMenuAction("Pending")}
           >
+            <svg
+              className="w-5 h-5 mr-3 text-yellow-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
             Pending
           </button>
         </div>

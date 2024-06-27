@@ -2,7 +2,7 @@ import React from "react";
 
 function Footer() {
   return (
-    <div className="bg-blueGray-200 pt-8 pb-6">
+    <div className="bg-blueGray-200 pt-8 pb-6 -z-20">
       <link
         rel="stylesheet"
         href="https://demos.creative-tim.com/notus-js/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css"
