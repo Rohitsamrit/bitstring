@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 
 const CreateResume = () => {
   const [resume, setResume] = useState(null);
@@ -9,31 +9,63 @@ const CreateResume = () => {
     phone: "",
     address: "",
     dob: "",
-    schoolName: "",
-    schoolBoard: "",
-    schoolPercentage: "",
-    juniorCollegeName: "",
-    juniorCollegeBoard: "",
-    juniorCollegePercentage: "",
-    college: "",
-    collegeDegree: "",
-    collegeDuration: "",
-    collegePointer: "",
-    jobRole: "",
-    experience: "",
-    internships: "",
-    projects: "",
-    technicalSkills: "",
+    jobRole: ""
   });
+
+  const [skills, setSkills] = useState([]);
+  const [experiences, setExperiences] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const [educations, setEducations] = useState([]);
+  const [achievements, setAchievements] = useState([]);
+  const [languages, setLanguages] = useState([]);
+
+  const skillRef = useRef(null);
+
+  const expRefRole = useRef(null);
+  const expRefCompany = useRef(null);
+  const expRefDuration = useRef(null);
+  const expRefDetail = useRef(null);
+
+  const projectRefName = useRef(null);
+  const projectRefDescription = useRef(null);
+  const projectRefLink = useRef(null);
+
+  const educationRefCollege = useRef(null);
+  const educationRefDegree = useRef(null);
+  const educationRefDuration = useRef(null);
+  const educationRefPointer = useRef(null);
+
+  const achievementRef = useRef(null);
+  const languageRef = useRef(null);
 
   const handleFormChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log(formData);
+    const res = await fetch("http://localhost:5501/add", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...formData,
+        skills,
+        experiences,
+        projects,
+        educations,
+        achievements,
+        languages,
+      }),
+    });
+    const resJson = await res.json();
+    if (resJson.ok) {
+      console.log(resJson.data);
+      alert("Data Saved Successfully!!");
+    } else {
+      alert(resJson.data);
+    }
   };
 
   const handleFileUpload = (e) => {
@@ -87,366 +119,518 @@ const CreateResume = () => {
         </div>
 
         {/* Form Section */}
-        <div className="w-1/2 p-4 flex flex-col">
-          <div className="flex-grow bg-white rounded-lg shadow-md p-6 overflow-auto">
-            <h1 className="text-3xl font-bold mb-6 text-gray-800">
-              Create Resume
-            </h1>
-            <form onSubmit={handleSubmit}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="col-span-1">
-                  <label
-                    htmlFor="name"
-                    className="block text-gray-700 font-semibold mb-2"
-                  >
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-                <div className="col-span-1">
-                  <label
-                    htmlFor="email"
-                    className="block text-gray-700 font-semibold mb-2"
-                  >
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-                <div className="col-span-1">
-                  <label
-                    htmlFor="phone"
-                    className="block text-gray-700 font-semibold mb-2"
-                  >
-                    Phone
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-                <div className="col-span-1">
-                  <label
-                    htmlFor="address"
-                    className="block text-gray-700 font-semibold mb-2"
-                  >
-                    Address
-                  </label>
-                  <input
-                    type="text"
-                    id="address"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-                <div className="col-span-1">
-                  <label
-                    htmlFor="dob"
-                    className="block text-gray-700 font-semibold mb-2"
-                  >
-                    Date of Birth
-                  </label>
-                  <input
-                    type="date"
-                    id="dob"
-                    name="dob"
-                    value={formData.dob}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-                <div className="col-span-1 md:col-span-2">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                    Education
-                  </h3>
-                </div>
-                <div className="col-span-1 md:col-span-2">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <label
-                        htmlFor="schoolName"
-                        className="block text-gray-700 font-semibold mb-1"
-                      >
-                        School Name
-                      </label>
-                      <input
-                        type="text"
-                        id="schoolName"
-                        name="schoolName"
-                        value={formData.schoolName}
-                        onChange={handleFormChange}
-                        placeholder="Enter School Name"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="schoolBoard"
-                        className="block text-gray-700 font-semibold mb-1"
-                      >
-                        Board
-                      </label>
-                      <input
-                        type="text"
-                        id="schoolBoard"
-                        name="schoolBoard"
-                        value={formData.schoolBoard}
-                        onChange={handleFormChange}
-                        placeholder="Enter Board"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="schoolPercentage"
-                        className="block text-gray-700 font-semibold mb-1"
-                      >
-                        Percentage
-                      </label>
-                      <input
-                        type="text"
-                        id="schoolPercentage"
-                        name="schoolPercentage"
-                        value={formData.schoolPercentage}
-                        onChange={handleFormChange}
-                        placeholder="Enter Percentage"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="col-span-1 md:col-span-2">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <label
-                        htmlFor="juniorCollegeName"
-                        className="block text-gray-700 font-semibold mb-1"
-                      >
-                        Junior College Name
-                      </label>
-                      <input
-                        type="text"
-                        id="juniorCollegeName"
-                        name="juniorCollegeName"
-                        value={formData.juniorCollegeName}
-                        onChange={handleFormChange}
-                        placeholder="Enter Junior College Name"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="juniorCollegeBoard"
-                        className="block text-gray-700 font-semibold mb-1"
-                      >
-                        Board
-                      </label>
-                      <input
-                        type="text"
-                        id="juniorCollegeBoard"
-                        name="juniorCollegeBoard"
-                        value={formData.juniorCollegeBoard}
-                        onChange={handleFormChange}
-                        placeholder="Enter Board"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="juniorCollegePercentage"
-                        className="block text-gray-700 font-semibold mb-1"
-                      >
-                        Percentage
-                      </label>
-                      <input
-                        type="text"
-                        id="juniorCollegePercentage"
-                        name="juniorCollegePercentage"
-                        value={formData.juniorCollegePercentage}
-                        onChange={handleFormChange}
-                        placeholder="Enter Percentage"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="col-span-1 md:col-span-2">
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div>
-                      <label
-                        htmlFor="college"
-                        className="block text-gray-700 font-semibold mb-1"
-                      >
-                        College/University Name
-                      </label>
-                      <input
-                        type="text"
-                        id="college"
-                        name="college"
-                        value={formData.college}
-                        onChange={handleFormChange}
-                        placeholder="Enter College/University Name"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="collegeDegree"
-                        className="block text-gray-700 font-semibold mb-1"
-                      >
-                        Degree
-                      </label>
-                      <input
-                        type="text"
-                        id="collegeDegree"
-                        name="collegeDegree"
-                        value={formData.collegeDegree}
-                        onChange={handleFormChange}
-                        placeholder="Enter Degree"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="collegeDuration"
-                        className="block text-gray-700 font-semibold mb-1"
-                      >
-                        Duration
-                      </label>
-                      <input
-                        type="text"
-                        id="collegeDuration"
-                        name="collegeDuration"
-                        value={formData.collegeDuration}
-                        onChange={handleFormChange}
-                        placeholder="Enter Duration (e.g., 2019-2023)"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="collegePointer"
-                        className="block text-gray-700 font-semibold mb-1"
-                      >
-                        Pointer
-                      </label>
-                      <input
-                        type="text"
-                        id="collegePointer"
-                        name="collegePointer"
-                        value={formData.collegePointer}
-                        onChange={handleFormChange}
-                        placeholder="Enter Pointer"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="col-span-1">
-                  <label
-                    htmlFor="jobRole"
-                    className="block text-gray-700 font-semibold mb-2"
-                  >
-                    Job Role
-                  </label>
-                  <select
-                    id="jobRole"
-                    name="jobRole"
-                    value={formData.jobRole}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  >
-                    <option value="">Select Job Role</option>
-                    <option value="developer">Developer</option>
-                    <option value="designer">Designer</option>
-                    <option value="manager">Manager</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-                <div className="col-span-1 md:col-span-2">
-                  <label
-                    htmlFor="experience"
-                    className="block text-gray-700 font-semibold mb-2"
-                  >
-                    Experience/Internships
-                  </label>
-                  <textarea
-                    id="experience"
-                    name="experience"
-                    value={formData.experience}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    rows="3"
-                  ></textarea>
-                </div>
-                <div className="col-span-1 md:col-span-2">
-                  <label
-                    htmlFor="projects"
-                    className="block text-gray-700 font-semibold mb-2"
-                  >
-                    Projects
-                  </label>
-                  <textarea
-                    id="projects"
-                    name="projects"
-                    value={formData.projects}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    rows="3"
-                  ></textarea>
-                </div>
-                <div className="col-span-1 md:col-span-2">
-                  <label
-                    htmlFor="technicalSkills"
-                    className="block text-gray-700 font-semibold mb-2"
-                  >
-                    Technical Skills
-                  </label>
-                  <textarea
-                    id="technicalSkills"
-                    name="technicalSkills"
-                    value={formData.technicalSkills}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    rows="3"
-                  ></textarea>
-                </div>
-              </div>
-              <div className="flex justify-center mt-6">
+        <div className="w-1/2 p-4 flex flex-col align-middle">
+          <h1 className="text-3xl font-bold mb-6">Create Resume</h1>
+          <form onSubmit={handleSubmit} className="align-middle justify-center">
+            {/* Personal Information Fields */}
+            <div className="col-span-1">
+              <label
+                htmlFor="name"
+                className="block text-gray-700 font-semibold mb-2"
+              >
+                Name
+              </label>
+              <input
+                type="text"
+                name="name"
+                id="name"
+                placeholder="Name"
+                value={formData.name}
+                onChange={handleFormChange}
+                className="w-full rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="col-span-1">
+              <label
+                htmlFor="email"
+                className="block text-gray-700 font-semibold mb-2"
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                id="email"
+                value={formData.email}
+                onChange={handleFormChange}
+                className="w-full rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="col-span-1">
+              <label
+                htmlFor="phone"
+                className="block text-gray-700 font-semibold mb-2"
+              >
+                Phone
+              </label>
+              <input
+                type="text"
+                name="phone"
+                placeholder="phone"
+                id="phone"
+                value={formData.phone}
+                onChange={handleFormChange}
+                className="w-full rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="col-span-1">
+              <label
+                htmlFor="address"
+                className="block text-gray-700 font-semibold mb-2"
+              >
+                Address
+              </label>
+              <input
+                type="text"
+                name="address"
+                id="address"
+                placeholder="Address"
+                value={formData.address}
+                onChange={handleFormChange}
+                className="w-full rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="col-span-1">
+              <label
+                htmlFor="dob"
+                className="block text-gray-700 font-semibold mb-2"
+              >
+                Date of Birth
+              </label>
+              <input
+                type="date"
+                name="dob"
+                id="dob"
+                placeholder="DOB"
+                value={formData.dob}
+                onChange={handleFormChange}
+                className="w-full rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div className="col-span-1">
+              <label
+                htmlFor="jobRole"
+                className="block text-gray-700 font-semibold mb-2"
+              >
+                Job Role
+              </label>
+              <input
+                type="text"
+                name="jobRole"
+                id="jobRole"
+                placeholder="Job Role"
+                value={formData.jobRole}
+                onChange={handleFormChange}
+                className="w-full rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Skills Section */}
+            <div className="col-span-1">
+              <label
+                htmlFor="skill"
+                className="block text-gray-700 font-semibold mb-2"
+              >
+                Skill
+              </label>
+              <div className="flex items-center">
+                <input
+                  type="text"
+                  name="skill"
+                  placeholder="Enter Skill"
+                  id="skill"
+                  className="flex-1 rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  ref={skillRef}
+                />
                 <button
-                  type="submit"
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  type="button"
+                  className="ml-2 font-bold rounded-md border border-gray-700 p-2 hover:bg-gray-800 hover:text-white"
+                  onClick={() => {
+                    setSkills([...skills, skillRef.current.value]);
+                    skillRef.current.value = "";
+                  }}
                 >
-                  Submit
+                  Add Skill
                 </button>
               </div>
-            </form>
-          </div>
+              {skills.map((skill, index) => (
+                <div
+                  key={index}
+                  className="cursor-pointer font-bold border border-black flex justify-between w-full mt-2 p-2 rounded-md"
+                >
+                  <span>{skill}</span>
+                  <button
+                    type="button"
+                    className="ml-2 font-bold rounded-md border p-1 bg-red-600 text-white"
+                    onClick={() =>
+                      setSkills(skills.filter((ski) => ski !== skill))
+                    }
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {/* Experience Section */}
+            <div className="col-span-1">
+              <label
+                htmlFor="experience"
+                className="block text-gray-700 font-semibold mb-2"
+              >
+                Experience
+              </label>
+              <div className="flex items-center">
+                <div className="flex items-center flex-col m-1">
+                  <input
+                    type="text"
+                    name="experienceRole"
+                    placeholder="Enter Role"
+                    id="experienceRole"
+                    className="m-1 flex-1 rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    ref={expRefRole}
+                  />
+                  <input
+                    type="text"
+                    name="experienceCompany"
+                    placeholder="Enter Company"
+                    id="experienceCompany"
+                    className="m-1 flex-1 rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    ref={expRefCompany}
+                  />
+                </div>
+                <div className="flex items-center flex-col m-1">
+                  <input
+                    type="text"
+                    name="experienceDuration"
+                    placeholder="Enter Duration(in years)"
+                    id="experienceDuration"
+                    className="m-1 flex-1 rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    ref={expRefDuration}
+                  />
+                  <input
+                    type="text"
+                    name="experienceDetail"
+                    placeholder="Enter Detail"
+                    id="experienceDetail"
+                    className="m-1 flex-1 rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    ref={expRefDetail}
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="ml-2 font-bold rounded-md border border-gray-700 p-2 hover:bg-gray-800 hover:text-white"
+                  onClick={() => {
+                    setExperiences([
+                      ...experiences,
+                      {
+                        role: expRefRole.current.value,
+                        company: expRefCompany.current.value,
+                        duration: expRefDuration.current.value,
+                        details: expRefDetail.current.value,
+                      },
+                    ]);
+                    expRefRole.current.value = "";
+                    expRefCompany.current.value = "";
+                    expRefDuration.current.value = "";
+                    expRefDetail.current.value = "";
+                  }}
+                >
+                  Add Exp
+                </button>
+              </div>
+              {experiences.map((experience, index) => (
+                <div
+                  key={index}
+                  className="cursor-pointer font-bold border border-black flex justify-between w-full mt-2 p-2 rounded-md"
+                >
+                  <span>{`${experience.role} in ${experience.company}`}</span>
+                  <button
+                    type="button"
+                    className="ml-2 font-bold rounded-md border p-1 bg-red-600 text-white"
+                    onClick={() =>
+                      setExperiences(
+                        experiences.filter((ski) => ski !== experience)
+                      )
+                    }
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
+            </div>
+            {/* Project Section */}
+            <div className="col-span-1">
+              <label
+                htmlFor="project"
+                className="block text-gray-700 font-semibold mb-2"
+              >
+                Project
+              </label>
+              <div className="flex items-center">
+                <div className="m-1 flex items-center flex-col">
+                  <input
+                    type="text"
+                    name="projectName"
+                    id="projectName"
+                    placeholder="Name"
+                    className="m-1 flex-1 rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    ref={projectRefName}
+                  />
+                  <input
+                    type="text"
+                    name="projectDescription"
+                    id="projectDescription"
+                    placeholder="Description"
+                    className="m-1 flex-1 rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    ref={projectRefDescription}
+                  />
+                </div>
+                <div className="flex items-center flex-col">
+                  <input
+                    type="text"
+                    name="projectLink"
+                    placeholder="Link"
+                    id="projectLink"
+                    className="m-1 flex-1 rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    ref={projectRefLink}
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="ml-2 font-bold rounded-md border border-gray-700 p-2 hover:bg-gray-800 hover:text-white"
+                  onClick={() => {
+                    setProjects([
+                      ...projects,
+                      {
+                        name: projectRefName.current.value,
+                        description: projectRefDescription.current.value,
+                        link: projectRefLink.current.value,
+                      },
+                    ]);
+                    projectRefName.current.value = "";
+                    projectRefDescription.current.value = "";
+                    projectRefLink.current.value = "";
+                  }}
+                >
+                  Add Project
+                </button>
+              </div>
+              {projects.map((project, index) => (
+                <div
+                  key={index}
+                  className="cursor-pointer font-bold border border-black flex justify-between w-full mt-2 p-2 rounded-md"
+                >
+                  <span>{project.name}</span>
+                  <button
+                    type="button"
+                    className="ml-2 font-bold rounded-md border p-1 bg-red-600 text-white"
+                    onClick={() =>
+                      setProjects(projects.filter((ski) => ski !== project))
+                    }
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
+            </div>
+            {/* Education Section */}
+            <div className="col-span-1">
+              <label
+                htmlFor="education"
+                className="block text-gray-700 font-semibold mb-2"
+              >
+                Education
+              </label>
+              <div className="flex items-center">
+                <div className="flex flex-col m-1">
+                  <input
+                    type="text"
+                    name="educationCollege"
+                    id="educationCollege"
+                    placeholder="College"
+                    className="m-1 flex-1 rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    ref={educationRefCollege}
+                  />
+                  <input
+                    type="text"
+                    name="educationDegree"
+                    placeholder="Degree"
+                    id="educationDegree"
+                    className="m-1 flex-1 rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    ref={educationRefDegree}
+                  />
+                </div>
+                <div className="flex flex-col m-1">
+                  <input
+                    type="text"
+                    name="educationDuration"
+                    placeholder="Duration(in years)"
+                    id="educationDuration"
+                    className="m-1 flex-1 rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    ref={educationRefDuration}
+                  />
+                  <input
+                    type="number"
+                    name="educationPointer"
+                    placeholder="Pointer (in CGPA)"
+                    id="educationPointer"
+                    className="m-1 flex-1 rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    ref={educationRefPointer}
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="ml-2 font-bold rounded-md border border-gray-700 p-2 hover:bg-gray-800 hover:text-white"
+                  onClick={() => {
+                    setEducations([
+                      ...educations,
+                      {
+                        college: educationRefCollege.current.value,
+                        degree: educationRefDegree.current.value,
+                        duration: educationRefDuration.current.value,
+                        pointer: educationRefPointer.current.value,
+                      },
+                    ]);
+                    educationRefCollege.current.value = "";
+                    educationRefDegree.current.value = "";
+                    educationRefDuration.current.value = "";
+                    educationRefPointer.current.value = "";
+                  }}
+                >
+                  Add Education
+                </button>
+              </div>
+              {educations.map((education, index) => (
+                <div
+                  key={index}
+                  className="cursor-pointer font-bold border border-black flex justify-between w-full mt-2 p-2 rounded-md"
+                >
+                  <span>{`${education.degree} in ${education.college}`}</span>
+                  <button
+                    type="button"
+                    className="ml-2 font-bold rounded-md border p-1 bg-red-600 text-white"
+                    onClick={() =>
+                      setEducations(
+                        educations.filter((ski) => ski !== education)
+                      )
+                    }
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {/* Achievements Section */}
+            <div className="col-span-1">
+              <label
+                htmlFor="achievement"
+                className="block text-gray-700 font-semibold mb-2"
+              >
+                Achievement
+              </label>
+              <div className="flex items-center">
+                <input
+                  type="text"
+                  name="achievement"
+                  id="achievement"
+                  placeholder="Achievement"
+                  className="flex-1 rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  ref={achievementRef}
+                />
+                <button
+                  type="button"
+                  className="ml-2 font-bold rounded-md border border-gray-700 p-2 hover:bg-gray-800 hover:text-white"
+                  onClick={() => {
+                    setAchievements([
+                      ...achievements,
+                      achievementRef.current.value,
+                    ]);
+                    achievementRef.current.value = "";
+                  }}
+                >
+                  Add Achievement
+                </button>
+              </div>
+              {achievements.map((achievement, index) => (
+                <div
+                  key={index}
+                  className="cursor-pointer font-bold border border-black flex justify-between w-full mt-2 p-2 rounded-md"
+                >
+                  <span>{achievement}</span>
+                  <button
+                    type="button"
+                    className="ml-2 font-bold rounded-md border p-1 bg-red-600 text-white"
+                    onClick={() =>
+                      setAchievements(
+                        achievements.filter((ski) => ski !== achievement)
+                      )
+                    }
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {/* Languages Section */}
+            <div className="col-span-1">
+              <label
+                htmlFor="language"
+                className="block text-gray-700 font-semibold mb-2"
+              >
+                Language
+              </label>
+              <div className="flex items-center">
+                <input
+                  type="text"
+                  name="language"
+                  id="language"
+                  placeholder="Language"
+                  className="flex-1 rounded-md p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  ref={languageRef}
+                />
+                <button
+                  type="button"
+                  className="ml-2 font-bold rounded-md border border-gray-700 p-2 hover:bg-gray-800 hover:text-white"
+                  onClick={() => {
+                    setLanguages([...languages, languageRef.current.value]);
+                    languageRef.current.value = "";
+                  }}
+                >
+                  Add Language
+                </button>
+              </div>
+              {languages.map((language, index) => (
+                <div
+                  key={index}
+                  className="cursor-pointer font-bold border border-black flex justify-between w-full mt-2 p-2 rounded-md"
+                >
+                  <span>{language}</span>
+                  <button
+                    type="button"
+                    className="ml-2 font-bold rounded-md border p-1 bg-red-600 text-white"
+                    onClick={() =>
+                      setLanguages(languages.filter((ski) => ski !== language))
+                    }
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
+            </div>
+            <div className="text-center mt-6">
+              <button
+                type="submit"
+                className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700"
+              >
+                Submit
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
