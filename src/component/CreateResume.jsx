@@ -249,6 +249,7 @@ const CreateResume = () => {
             </div>
 
             {/* Skills Section */}
+            {/* Skills Section */}
             <div className="col-span-1">
               <label
                 htmlFor="skill"
