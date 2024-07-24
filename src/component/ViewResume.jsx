@@ -1,22 +1,32 @@
-import React, { useState, useEffect } from "react";
-import { BlobProvider } from "@react-pdf/renderer";
-import ResumeDocument from "./ResumeDocument";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { format } from "date-fns";
-import { CalendarDaysIcon } from "@heroicons/react/24/solid";
+import React, { useState, useEffect } from 'react';
+import { BlobProvider } from '@react-pdf/renderer';
+import ResumeDocument from './ResumeDocument';
+import DatePicker from 'react-datepicker';
+import Format1 from './Format1';
+import Format3 from './Format3';
+import 'react-datepicker/dist/react-datepicker.css';
+import { format } from 'date-fns';
+import { CalendarDaysIcon } from '@heroicons/react/24/solid';
+import ProfileComparison from './ProfileComparison';
 
 function ViewResumes() {
   const [resumes, setResumes] = useState([]);
   const [selectedResume, setSelectedResume] = useState(null);
-  const [experienceFilter, setExperienceFilter] = useState("");
-  const [jobRoleFilter, setJobRoleFilter] = useState("");
-  const [sortBy, setSortBy] = useState("");
+  const [experienceFilter, setExperienceFilter] = useState('');
+  const [jobRoleFilter, setJobRoleFilter] = useState('');
+  const [sortBy, setSortBy] = useState('');
   const [contextMenu, setContextMenu] = useState(null);
-  const [statusFilter, setStatusFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState('All');
   const [resumesData, setResumesData] = useState([]);
   const [dateRange, setDateRange] = useState([null, null]);
   const [startDate, endDate] = dateRange;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isComparisonMode, setIsComparisonMode] = useState(false);
+  const [selectedForComparison, setSelectedForComparison] = useState([]);
+  const [isComparisonModalOpen, setIsComparisonModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
   const handleStatusFilterChange = (status) => {
     setStatusFilter(status);
   };
@@ -27,15 +37,15 @@ function ViewResumes() {
 
   useEffect(() => {
     const fetcher = async () => {
-      const resp = await fetch("http://localhost:5501/all", {
-        method: "GET",
+      const resp = await fetch('http://localhost:5501/all', {
+        method: 'GET',
       });
       const respJson = await resp.json();
       return respJson.data;
     };
     fetcher()
       .then((data) => {
-        console.log("datawrrr", data);
+        console.log('datawrrr', data);
         setResumesData(data);
         setResumes(data.map((resume) => ({ ...resume })));
       })
@@ -43,13 +53,37 @@ function ViewResumes() {
         alert(err.message);
       });
   }, []);
+  const toggleComparisonMode = () => {
+    setIsComparisonMode(!isComparisonMode);
+    if (isComparisonMode) {
+      setSelectedForComparison([]);
+      setSelectedResume(null); // Clear the selected resume when exiting comparison mode
+    }
+  };
+
+  const handleSelectForComparison = (resumeId) => {
+    setSelectedForComparison((prev) => {
+      if (prev.includes(resumeId)) {
+        return prev.filter((id) => id !== resumeId);
+      } else if (prev.length < 4) {
+        return [...prev, resumeId];
+      }
+      return prev;
+    });
+  };
+
+  const clearComparison = () => {
+    setSelectedForComparison([]);
+    setIsComparisonMode(false);
+    setSelectedResume(null);
+  };
 
   const filterAndSortResumes = () => {
     let filteredResumes = [...resumesData];
 
     // Filter by experience
     if (experienceFilter) {
-      const [min, max] = experienceFilter.split("-").map(Number);
+      const [min, max] = experienceFilter.split('-').map(Number);
       filteredResumes = filteredResumes.filter(
         (resume) =>
           resume?.experience >= min && resume?.experience <= (max || Infinity)
@@ -63,7 +97,7 @@ function ViewResumes() {
       );
     }
     // Filter by status
-    if (statusFilter !== "All") {
+    if (statusFilter !== 'All') {
       filteredResumes = filteredResumes.filter(
         (resume) => resume?.status === statusFilter
       );
@@ -84,13 +118,13 @@ function ViewResumes() {
     }
 
     // Sort resumes
-    if (sortBy === "experienceAsc") {
+    if (sortBy === 'experienceAsc') {
       filteredResumes.sort((a, b) => a.experience - b.experience);
-    } else if (sortBy === "experienceDesc") {
+    } else if (sortBy === 'experienceDesc') {
       filteredResumes.sort((a, b) => b.experience - a.experience);
-    } else if (sortBy === "nameAsc") {
+    } else if (sortBy === 'nameAsc') {
       filteredResumes.sort((a, b) => a.name.localeCompare(b.name));
-    } else if (sortBy === "nameDesc") {
+    } else if (sortBy === 'nameDesc') {
       filteredResumes.sort((a, b) => b.name.localeCompare(a.name));
     }
 
@@ -98,11 +132,11 @@ function ViewResumes() {
   };
 
   const resetFilters = () => {
-    setExperienceFilter("");
-    setJobRoleFilter("");
-    setSortBy("");
-    setStatusFilter("All");
-    setStatusFilter("All");
+    setExperienceFilter('');
+    setJobRoleFilter('');
+    setSortBy('');
+    setStatusFilter('All');
+    setStatusFilter('All');
     setDateRange([null, null]);
     setResumes(resumesData);
   };
@@ -121,7 +155,7 @@ function ViewResumes() {
       const res = await fetch(
         `http://localhost:5501/update?_id=${contextMenu.resumeId}&action=${action}`,
         {
-          method: "GET",
+          method: 'GET',
         }
       );
       const resJson = await res.json();
@@ -140,15 +174,15 @@ function ViewResumes() {
 
       setResumes(updatedResumes);
       const fetcher = async () => {
-        const resp = await fetch("http://localhost:5501/all", {
-          method: "GET",
+        const resp = await fetch('http://localhost:5501/all', {
+          method: 'GET',
         });
         const respJson = await resp.json();
         return respJson.data;
       };
       fetcher()
         .then((data) => {
-          console.log("datawrrr", data);
+          console.log('datawrrr', data);
           setResumesData(data);
           setResumes(data.map((resume) => ({ ...resume })));
         })
@@ -162,6 +196,11 @@ function ViewResumes() {
   const uniqueJobRoles = [
     ...new Set(resumesData.map((resume) => resume?.jobRole)),
   ];
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];
+  };
 
   return (
     <div
@@ -258,6 +297,31 @@ function ViewResumes() {
         </button>
       </div>
 
+      <div className="mb-4 flex justify-between items-center">
+        <button
+          className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-300"
+          onClick={toggleComparisonMode}
+        >
+          {isComparisonMode ? 'Exit Comparison Mode' : 'Enter Comparison Mode'}
+        </button>
+        {isComparisonMode && selectedForComparison.length >= 2 && (
+          <button
+            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-300"
+            onClick={() => setIsComparisonModalOpen(true)}
+          >
+            Compare Selected ({selectedForComparison.length})
+          </button>
+        )}
+        {isComparisonMode && (
+          <button
+            className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-300"
+            onClick={clearComparison}
+          >
+            Clear Comparison
+          </button>
+        )}
+      </div>
+
       {/* Resume cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {resumes.map((resume) => (
@@ -267,11 +331,21 @@ function ViewResumes() {
             onClick={() => setSelectedResume(resume)}
             onContextMenu={(e) => handleContextMenu(e, resume?._id)}
           >
+            {isComparisonMode && (
+              <div className="absolute top-2 right-2">
+                <input
+                  type="checkbox"
+                  checked={selectedForComparison.includes(resume._id)}
+                  onChange={() => handleSelectForComparison(resume._id)}
+                  className="form-checkbox h-5 w-5 text-indigo-600"
+                />
+              </div>
+            )}
             <div className="p-6">
               <img
                 src={
                   resume?.profilePic ||
-                  "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                  'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'
                 }
                 alt={`${resume?.name}'s profile`}
                 className="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-indigo-500"
@@ -285,17 +359,17 @@ function ViewResumes() {
               <p className="text-center text-gray-600">
                 Experience: {resume?.experience} years
               </p>
-              {resume?.status !== "Undecided" && (
+              {resume?.status !== 'Undecided' && (
                 <p
                   className={`text-center font-bold mt-4 px-3 py-1 rounded-full
     ${
-      resume?.status === "Accept"
-        ? "bg-green-100 text-green-800"
-        : resume?.status === "Pending"
-        ? "bg-yellow-100 text-yellow-800"
-        : resume?.status === "Reject"
-        ? "bg-red-100 text-red-800"
-        : "bg-white-100 text-gray-800"
+      resume?.status === 'Accept'
+        ? 'bg-green-100 text-green-800'
+        : resume?.status === 'Pending'
+        ? 'bg-yellow-100 text-yellow-800'
+        : resume?.status === 'Reject'
+        ? 'bg-red-100 text-red-800'
+        : 'bg-white-100 text-gray-800'
     }`}
                 >
                   {resume?.status}
@@ -303,13 +377,51 @@ function ViewResumes() {
               )}
 
               <p className="text-center text-gray-500 mt-4 text-sm">
-                Created: {format(new Date(resume?.createdAt), "MMM d, yyyy")}
+                Created: {format(new Date(resume?.createdAt), 'MMM d, yyyy')}
               </p>
             </div>
           </div>
         ))}
       </div>
 
+      {/* Comparison Modal */}
+      {isComparisonModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-3xl font-bold text-indigo-700">
+                  Profile Comparison
+                </h2>
+                <button
+                  className="text-gray-500 hover:text-red-500 transition duration-300"
+                  onClick={() => setIsComparisonModalOpen(false)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <ProfileComparison
+                profiles={resumes.filter((resume) =>
+                  selectedForComparison.includes(resume._id)
+                )}
+              />
+            </div>
+          </div>
+        </div>
+      )}
       {/* Context Menu */}
       {contextMenu && (
         <div
@@ -318,7 +430,7 @@ function ViewResumes() {
         >
           <button
             className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-150 ease-in-out"
-            onClick={() => handleContextMenuAction("Accept")}
+            onClick={() => handleContextMenuAction('Accept')}
           >
             <svg
               className="w-5 h-5 mr-3 text-green-500"
@@ -338,7 +450,7 @@ function ViewResumes() {
           </button>
           <button
             className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-150 ease-in-out"
-            onClick={() => handleContextMenuAction("Reject")}
+            onClick={() => handleContextMenuAction('Reject')}
           >
             <svg
               className="w-5 h-5 mr-3 text-red-500"
@@ -358,7 +470,7 @@ function ViewResumes() {
           </button>
           <button
             className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-150 ease-in-out"
-            onClick={() => handleContextMenuAction("Pending")}
+            onClick={() => handleContextMenuAction('Pending')}
           >
             <svg
               className="w-5 h-5 mr-3 text-yellow-500"
@@ -379,7 +491,7 @@ function ViewResumes() {
         </div>
       )}
 
-      {selectedResume && (
+      {selectedResume && !isComparisonMode && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
@@ -409,107 +521,306 @@ function ViewResumes() {
               </div>
 
               <div className="space-y-4">
-                <p>
-                  <span className="font-semibold">Experience:</span>{" "}
-                  {selectedResume?.experience} years
-                </p>
-                <p>
-                  <span className="font-semibold">Job Role:</span>{" "}
-                  {selectedResume?.jobRole}
-                </p>
-                <p>
-                  <span className="font-semibold">DOB:</span>{" "}
-                  {selectedResume?.dob}
-                </p>
-                <p>
-                  <span className="font-semibold">Contact:</span>{" "}
-                  {selectedResume?.email}, {selectedResume?.phone}
-                </p>
-                <p>
-                  <span className="font-semibold">Status:</span>{" "}
-                  {selectedResume?.status}
-                </p>
-
-                <div>
-                  <h3 className="text-xl font-bold text-indigo-600 mt-6 mb-2">
+                <div className="bg-white shadow-md rounded-lg p-6 my-6">
+                  <h3 className="text-2xl font-bold text-indigo-600 mb-4">
+                    Personal Information
+                  </h3>
+                  <div className="space-y-3">
+                    <p className="bg-gray-50 p-3 rounded-md">
+                      <span className="font-semibold text-indigo-600">
+                        Experience:
+                      </span>{' '}
+                      <span className="text-gray-800">
+                        {selectedResume?.experience} years
+                      </span>
+                    </p>
+                    <p className="bg-gray-50 p-3 rounded-md">
+                      <span className="font-semibold text-indigo-600">
+                        Job Role:
+                      </span>{' '}
+                      <span className="text-gray-800">
+                        {selectedResume?.jobRole}
+                      </span>
+                    </p>
+                    <p className="bg-gray-50 p-3 rounded-md">
+                      <span className="font-semibold text-indigo-600">
+                        DOB:
+                      </span>{' '}
+                      <span className="text-gray-800">
+                        {formatDate(selectedResume?.dob)}
+                      </span>
+                    </p>
+                    <p className="bg-gray-50 p-3 rounded-md">
+                      <span className="font-semibold text-indigo-600">
+                        Email:
+                      </span>{' '}
+                      <span className="text-gray-800">
+                        {selectedResume?.email}
+                      </span>
+                    </p>
+                    <p className="bg-gray-50 p-3 rounded-md">
+                      <span className="font-semibold text-indigo-600">
+                        Mobile:
+                      </span>{' '}
+                      <span className="text-gray-800">
+                        {selectedResume?.phone}
+                      </span>
+                    </p>
+                    <p className="bg-gray-50 p-3 rounded-md">
+                      <span className="font-semibold text-indigo-600">
+                        Status:
+                      </span>{' '}
+                      <span className="text-gray-800">
+                        {selectedResume?.status}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+                <div className="bg-white shadow-md rounded-lg p-6 my-6">
+                  <h3 className="text-2xl font-bold text-indigo-600 mb-4">
                     Education
                   </h3>
-                  <ul className="list-disc list-inside">
+                  <ul className="space-y-4">
                     {selectedResume?.educations?.map((edu, index) => (
-                      <li key={index}>
-                        {edu?.degree} - {edu?.college}, {edu?.duration}
+                      <li
+                        key={index}
+                        className="bg-gray-50 p-4 rounded-md shadow-sm hover:shadow-md transition-shadow duration-300"
+                      >
+                        <div className="font-semibold text-lg text-gray-800">
+                          {edu?.degree}
+                        </div>
+                        <div className="text-indigo-500">{edu?.college}</div>
+                        <div className="text-sm text-gray-600 mt-1">
+                          <span className="mr-3">{edu?.duration}</span>
+                          <span className="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs font-medium">
+                            {edu?.pointer}{' '}
+                            {edu?.pointerType === 'cgpa'
+                              ? 'CGPA?CGPA'
+                              : 'Percentage/CGPA'}
+                          </span>
+                        </div>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                <div>
-                  <h3 className="text-xl font-bold text-indigo-600 mt-6 mb-2">
+                <div className="bg-white shadow-md rounded-lg p-6 my-6">
+                  <h3 className="text-2xl font-bold text-indigo-600 mb-4">
                     Experience/Internships
                   </h3>
-                  <ul className="list-disc list-inside">
+                  <div className="space-y-4">
                     {selectedResume?.experiences?.map((exp, index) => (
-                      <li key={index}>
-                        {exp.role} at {exp.company} ({exp.duration}) -{" "}
-                        {exp.detail}
-                      </li>
+                      <div
+                        key={index}
+                        className="bg-gray-50 p-4 rounded-md shadow-sm hover:shadow-md transition-shadow duration-300"
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <h4 className="text-lg font-semibold text-indigo-700">
+                            {exp.role}
+                          </h4>
+                          <span className="text-sm text-gray-600 bg-gray-200 px-2 py-1 rounded-full">
+                            {exp.duration}{' '}
+                            {exp.duration === 1 ? 'year' : 'years'}
+                          </span>
+                        </div>
+                        <p className="text-md font-medium text-gray-600 mb-2">
+                          {exp.company}
+                        </p>
+                        <p className="text-gray-700">{exp.detail}</p>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
 
-                <div>
-                  <h3 className="text-xl font-bold text-indigo-600 mt-6 mb-2">
+                <div className="bg-white shadow-md rounded-lg p-6 my-6">
+                  <h3 className="text-2xl font-bold text-indigo-600 mb-4">
                     Projects
                   </h3>
-                  <ul className="list-disc list-inside">
+                  <div className="space-y-4">
                     {selectedResume.projects?.map((project, index) => (
-                      <li key={index}>
-                        {project.name} - {project.description}
-                      </li>
+                      <div
+                        key={index}
+                        className="bg-gray-50 p-4 rounded-md shadow-sm hover:shadow-md transition-shadow duration-300"
+                      >
+                        <h4 className="text-lg font-semibold text-indigo-700 mb-2">
+                          {project.name}
+                        </h4>
+                        <p className="text-gray-700">{project.description}</p>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
 
-                <div>
-                  <h3 className="text-xl font-bold text-indigo-600 mt-6 mb-2">
+                <div className="bg-white shadow-md rounded-lg p-6 my-6">
+                  <h3 className="text-2xl font-bold text-indigo-600 mb-4">
                     Technical Skills
                   </h3>
-                  <ul className="list-disc list-inside">
+                  <div className="flex flex-wrap gap-2">
                     {selectedResume.skills?.map((skill, index) => (
-                      <li key={index}>{skill}</li>
+                      <span
+                        key={index}
+                        className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium"
+                      >
+                        {skill}
+                      </span>
                     ))}
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold text-indigo-600 mt-6 mb-2">
-                    Certifications
-                  </h3>
-                  <ul className="list-disc list-inside">
-                    {selectedResume?.certifications?.map(
-                      (certification, index) => (
-                        <li key={index}>{certification}</li>
-                      )
-                    )}
-                  </ul>
+                  </div>
                 </div>
 
                 <div>
                   <h3 className="text-xl font-bold text-indigo-600 mt-6 mb-2">
                     View Resume
                   </h3>
-                  <BlobProvider
-                    document={<ResumeDocument resume={selectedResume} />}
+
+                  <button
+                    className="ml-2 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-300"
+                    onClick={() => {
+                      window.open(
+                        //.pdf can only be seen.Need to resolve it
+                        `http://localhost:5501/${selectedResume.email}${selectedResume.phone}.pdf`,
+                        '_blank'
+                      );
+                    }}
                   >
-                    {({ url }) => (
-                      <button
-                        className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-300"
-                        onClick={() => window.open(url, "_blank")}
-                      >
-                        View PDF
-                      </button>
-                    )}
-                  </BlobProvider>
+                    View Original
+                  </button>
+                </div>
+
+                <div className="relative">
+                  <h3 className="text-xl font-bold text-indigo-600 mt-6 mb-2">
+                    Resume Format
+                  </h3>
+                  <button
+                    onClick={openModal}
+                    className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-300"
+                  >
+                    Download PDF
+                  </button>
+
+                  {isModalOpen && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                      <div className="bg-white p-6 rounded-lg shadow-xl">
+                        <h3 className="text-lg font-medium mb-4">
+                          Choose Resume Format
+                        </h3>
+                        <div className="space-y-4">
+                          <BlobProvider
+                            document={
+                              <ResumeDocument resume={selectedResume} />
+                            }
+                          >
+                            {({ url, loading, error }) => {
+                              if (loading) {
+                                return <div>Loading...</div>;
+                              }
+
+                              if (error) {
+                                return (
+                                  <div>
+                                    Error generating PDF: {error.message}
+                                  </div>
+                                );
+                              }
+
+                              return (
+                                <button
+                                  className="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-300"
+                                  onClick={() => {
+                                    if (url) {
+                                      window.open(url, '_blank');
+                                      closeModal();
+                                    } else {
+                                      console.error(
+                                        'URL is null or undefined.'
+                                      );
+                                    }
+                                  }}
+                                >
+                                  Download Format 1
+                                </button>
+                              );
+                            }}
+                          </BlobProvider>
+                          <BlobProvider
+                            document={<Format1 resume={selectedResume} />}
+                          >
+                            {({ url, loading, error }) => {
+                              if (loading) {
+                                return <div>Loading...</div>;
+                              }
+
+                              if (error) {
+                                return (
+                                  <div>
+                                    Error generating PDF: {error.message}
+                                  </div>
+                                );
+                              }
+
+                              return (
+                                <button
+                                  className="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-300"
+                                  onClick={() => {
+                                    if (url) {
+                                      window.open(url, '_blank');
+                                      closeModal();
+                                    } else {
+                                      console.error(
+                                        'URL is null or undefined.'
+                                      );
+                                    }
+                                  }}
+                                >
+                                  Download Format 2
+                                </button>
+                              );
+                            }}
+                          </BlobProvider>
+                          <BlobProvider
+                            document={<Format3 resume={selectedResume} />}
+                          >
+                            {({ url, loading, error }) => {
+                              if (loading) {
+                                return <div>Loading...</div>;
+                              }
+
+                              if (error) {
+                                return (
+                                  <div>
+                                    Error generating PDF: {error.message}
+                                  </div>
+                                );
+                              }
+
+                              return (
+                                <button
+                                  className="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-300"
+                                  onClick={() => {
+                                    if (url) {
+                                      window.open(url, '_blank');
+                                      closeModal();
+                                    } else {
+                                      console.error(
+                                        'URL is null or undefined.'
+                                      );
+                                    }
+                                  }}
+                                >
+                                  Download Format 3
+                                </button>
+                              );
+                            }}
+                          </BlobProvider>
+                        </div>
+                        <button
+                          className="mt-4 text-sm text-gray-600 hover:text-gray-800"
+                          onClick={closeModal}
+                        >
+                          Close
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

@@ -1,8 +1,8 @@
-import React from "react";
+import React from 'react';
 
 function Footer() {
   return (
-    <div className="bg-blueGray-200 pt-8 pb-6">
+    <div className="bg-blueGray-200 pt-8 pb-6 -z-20">
       <link
         rel="stylesheet"
         href="https://demos.creative-tim.com/notus-js/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css"
@@ -44,7 +44,7 @@ function Footer() {
         <div className="flex flex-wrap items-center md:justify-between justify-center">
           <div className="w-full md:w-4/12 px-4 mx-auto text-center">
             <div className="text-sm text-blueGray-500 font-semibold py-1">
-              Copyright © <span id="get-current-year">2024</span>{" "}
+              Copyright © <span id="get-current-year">2024</span>{' '}
               <a
                 className="text-blueGray-500 hover:text-gray-800"
                 target="_blank"
@@ -53,7 +53,7 @@ function Footer() {
               >
                 BitString IT Services Pvt. Ltd. |
               </a>
-              <a className="text-blueGray-500 hover:text-blueGray-800" href="#">
+              <a className="text-blueGray-500 hover:text-blueGray-800" href="/">
                 All Rights Reserved
               </a>
               .
